@@ -1,0 +1,50 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
+
+    <ext:property-placeholder placeholder-prefix="$["
+                              placeholder-suffix="]">
+    </ext:property-placeholder>
+
+    <cm:property-placeholder persistent-id="de.afinke.playground.activemq.broker" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="brokerURL" value="tcp://localhost:61616"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="playground" dataDirectory="$[karaf.data]/activemq/playground"
+            useShutdownHook="false" startAsync="true">
+
+        <destinations>
+            <queue physicalName="TestQueue"/>
+        </destinations>
+
+        <destinationPolicy>
+            <policyMap>
+                <policyEntries>
+                    <policyEntry topic=">" producerFlowControl="true" memoryLimit="1mb">
+                        <pendingSubscriberPolicy>
+                            <vmCursor/>
+                        </pendingSubscriberPolicy>
+                    </policyEntry>
+                    <policyEntry queue=">" producerFlowControl="true" memoryLimit="1mb">
+                    </policyEntry>
+                </policyEntries>
+            </policyMap>
+        </destinationPolicy>
+        
+        <managementContext>
+            <managementContext createConnector="false"/>
+        </managementContext>
+
+        <persistenceAdapter>
+            <kahaDB directory="$[karaf.data]/activemq/playground/kahadb"/>
+        </persistenceAdapter>
+        
+        <transportConnectors>
+            <transportConnector name="openwire" uri="${brokerURL}"/>
+        </transportConnectors>
+
+    </broker>
+
+</blueprint>

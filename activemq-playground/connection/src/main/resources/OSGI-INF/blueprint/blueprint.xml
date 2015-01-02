@@ -1,0 +1,27 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="
+             http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+             http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+             ">
+
+    <cm:property-placeholder persistent-id="de.afinke.playground.activemq.connection" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="brokerURL" value="tcp://localhost:61616"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="activemqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="${brokerURL}"/>
+    </bean>
+
+    <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+        <property name="maxConnections" value="8"/>
+        <property name="idleTimeout" value="0"/>
+        <property name="connectionFactory" ref="activemqConnectionFactory"/>
+    </bean>
+
+    <service ref="pooledConnectionFactory" interface="javax.jms.ConnectionFactory"/>
+
+</blueprint>
