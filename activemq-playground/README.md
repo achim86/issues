@@ -58,10 +58,8 @@ JUnit Test is still green as its just used as an executor here.
 
 ## Observations so far
 
-PooledConnectionFactory is exported by activemq-web-console (why?) and activemq-osgi.
-
+- The activemq-web-console wab embedds geronimo-jms_1.1_spec-1.1.1 (javax.jms) which may be the reason for the classcasting issue as geronimo-jms_1.1_spec-1.1.1 bundle is already installed in karaf (part of activemq feature) so there are two versions of javax.jms. `Embedded-Artifacts: WEB-INF/lib/geronimo-jms_1.1_spec-1.1.1.jar;g="org.apache.geronimo.specs";a="geronimo-jms_1.1_spec";v="1.1.1"`
+- Many `org.apache.activmq.*` packages are exported by activemq-web-console. Seems to be unnecessary for me. For example org.apache.activemq.pool.
 `karaf@root> exports | grep org.apache.activemq.pool
    103 org.apache.activemq.pool; version=5.9.0
-   110 org.apache.activemq.pool; version=5.9.0`
-
-Where bundle id 103 is activemq-web-console and bundle id 110 activemq-osgi
+   110 org.apache.activemq.pool; version=5.9.0` (where bundle id 103 is activemq-web-console and bundle id 110 activemq-osgi)
